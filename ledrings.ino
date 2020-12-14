@@ -54,7 +54,7 @@ int inputs = 2;
 
 //////////////////////////////////////////////////////////////////////
 
-int illuminateDly = 60;
+int illuminateDly = 30;
 u8 illuminateMaxBrightness = 0x80;
 int illuminateDlyAcc = .93;
 
@@ -63,7 +63,7 @@ int waitDly = 5000; //milliseconds
 int slowfadeDly = 20;
 
 u8 trailBrightness = 0xb0;
-int trailDly = 30;
+int trailDly = 15;
 
 u8 flashBrightness = 0xb0;
 
@@ -203,7 +203,7 @@ void stateMachine(int side) {
         if (f < 108 && side == left) {
             f++;
         }
-        else if(side == right){
+        else if(side == left){
             setState(FLASH);
             break;
         }
@@ -251,7 +251,7 @@ void stateMachine(int side) {
             if (side==left) LEFT.setPixelColor(i, colorW(colors));
             if (side==right) RIGHT.setPixelColor(i, colorW(colors));
         }
-        if (side == right) setState(FASTFADE);
+        if (side == left) setState(FASTFADE);
         break;
 
     case FASTFADE:
@@ -273,7 +273,7 @@ void stateMachine(int side) {
         if (side == left) colors--;
             dlyDelay.repeat();
         
-            if (side == right && colors == 0) setState(POLL);
+            if (side == left && colors == 0) setState(POLL);
 
         break;
     case POLL:

@@ -63,7 +63,7 @@ int waitDly = 5000; //milliseconds
 int slowfadeDly = 20;
 
 u8 trailBrightness = 0xb0;
-int trailDly = 15;
+int trailDly = 0;
 
 u8 flashBrightness = 0xb0;
 
@@ -147,7 +147,7 @@ void stateMachine(int side) {
             if (side==right) RIGHT.setPixelColor(i, colorW(colors));
         }
 
-        //dly = dly * illuminateDlyAcc;
+        dly = dly * illuminateDlyAcc;
         dlyDelay.start(dly);
         if (colors == illuminateMaxBrightness)colors = illuminateMaxBrightness - 1;
         if (side == left) colors++;
@@ -200,7 +200,7 @@ void stateMachine(int side) {
             dlyDelay.start(trailDly);
             break;
         }
-        if (f < 108 && side == left) {
+        if (f < 93 && side == left) {
             f++;
         }
         else if(side == left){
@@ -208,25 +208,13 @@ void stateMachine(int side) {
             break;
         }
 
-        for (int l = 0; l < f / 2.65; l++) {
-            if (side==left) LEFT.setPixelColor(l + 52, colorW(colors));
-            if (side==right) RIGHT.setPixelColor(l + 52, colorW(colors));
-            for (int j = l; j > 0; j--) {
-                if (side==left) LEFT.setPixelColor(j + 52, colorW(159 - ((l - j) * 10)));
-                if (side==right) RIGHT.setPixelColor(j + 52, colorW(159 - ((l - j) * 10)));
-                if ((159 - ((l - j) * 10)) < 0) {
-                    if (side==left) LEFT.setPixelColor(j + 52, 0);
-                    if (side==right) RIGHT.setPixelColor(j + 52, 0);
-                }
-            }
-        }
-        for (int i = 0; i < f / 2; ++i) {
+        for (int i = 0; i < f; ++i) {
             if (side==left) LEFT.setPixelColor(i - 1, colorW(colors));
             if (side==right) RIGHT.setPixelColor(i - 1, colorW(colors));
-            for (int j = i; j > 0; j--) {
-                if (side==left) LEFT.setPixelColor(j - 1, colorW(159 - ((i - j) * 10)));
-                if (side==right) RIGHT.setPixelColor(j - 1, colorW(159 - ((i - j) * 10)));
-                if ((159 - ((i - j) * 10)) < 0) {
+            for (int j = i; j > i-6; j--) {
+                if (side==left) LEFT.setPixelColor(j - 1, colorW(180 - ((i - j) * 50)));
+                if (side==right) RIGHT.setPixelColor(j - 1, colorW(180 - ((i - j) * 50)));
+                if ((180 - ((i - j) * 50)) < 0) {
                     if (side==left) LEFT.setPixelColor(j - 1, 0);
                     if (side==right) RIGHT.setPixelColor(j - 1, 0);
                 }
@@ -654,7 +642,6 @@ void poll_buttons(int side) {
     }
 
 }
-
 
 
 

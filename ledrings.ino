@@ -48,35 +48,46 @@ Adafruit_NeoPixel RIGHT(NUM_PIXELS, NEOPIXEL_PIN_RIGHT, NEO_GRB + NEO_KHZ800);
 
 int f = 0;
 int dly;
-u8 colors = 0x30;
+u8 colors = 0x00;
 u32 colorW(u8 colorz);
 int inputs = 2;
 
 //////////////////////////////////////////////////////////////////////
 
-int illuminateDly = 30;
-u8 illuminateMaxBrightness = 0x80;
-int illuminateDlyAcc = .93;
+// states
+//  animation one
+//  ILLUMINATE,     // 0
+//  WAIT,           // 1
+//  SLOWFADE,       // 2
+//  
+//  animation two
+//  TRAIL,          // 3
+//  FLASH,          // 4
+//  FASTFADE,       // 5
 
-int waitDly = 5000; //milliseconds
+int illuminateDly = 30;  // speed of illumination phase of animation one, bigger numbers = slower
+u8 illuminateMaxBrightness = 0x40; // brightness reached in animation one.  0x00-0xff
+int illuminateDlyAcc = .93; // acceleration of illumination phase of animation one, bigger numbers = slower
 
-int slowfadeDly = 20;
+int waitDly = 15000; // duration of wait phase of animation one, bigger numbers = longer
 
-u8 trailBrightness = 0xb0;
-int trailDly = 0;
+int slowfadeDly = 20; // speed of slow fade phase of animation one, bigger numbers = slower
 
-u8 flashBrightness = 0xb0;
+u8 trailBrightness = 0xb0; // brightness reached in animation two.  0x00-0xff
+int trailDly = 0; // speed of trail phase of animation two, bigger numbers = slower
 
-int fastfadeDly = 5;
+u8 flashBrightness = 0xb0;// brightness of flash in animation two.  0x00-0xff
 
-int flashDly = 250;
+int fastfadeDly = 5; // speed of trail fast fade of animation two, bigger numbers = slower
 
-int MAX_BRIGHTNESS = 50;
-int refreshDly = 20; //20 milliseconds = 50hz
+int flashDly = 250; // duration of flash phase of animation two, bigger numbers = longer
 
-u8 fivepercent = 0x0f;
-u8 fifteenpercent = 0x30;
-u8 fourtypercent = 0x50;
+int MAX_BRIGHTNESS = 50; 
+int refreshDly = 20; // 20 milliseconds = 50hz framerate
+
+u8 fivepercent = 0x0f; //value associated with five percent brightness, 0x00-0xff
+u8 fifteenpercent = 0x30; //value associated with fifteen percent brightness, 0x00-0xff
+u8 fortypercent = 0x50; //value associated with forty percent brightness, 0x00-0xff
 
 //////////////////////////////////////////////////////////////////////
 
@@ -113,6 +124,8 @@ void setState(States newState) {
     Serial.print(Fin_state   );
     Serial.print(Gin_state   );
     Serial.print(trip_state  );
+    Serial.print(" ");
+    Serial.print(colors);
     Serial.println("x");
     dlyDelay.start(1);
 }
@@ -159,7 +172,6 @@ void stateMachine(int side) {
             enteringState = false;
             dly = waitDly;
             dlyDelay.start(5000);
-            Serial.println("a");
             break;
         }
 
@@ -170,7 +182,6 @@ void stateMachine(int side) {
             setState(SLOWFADE);
         }
         dlyDelay.start(10);
-        Serial.println("b");
         break;
 
     case SLOWFADE:
@@ -179,16 +190,20 @@ void stateMachine(int side) {
             enteringState = false;
             dly = slowfadeDly;
             dlyDelay.start(dly);
+            Serial.print(" ");
+            Serial.print(colors);
+            Serial.print("y");
             break;
         }
 
+        if (side == left && colors == 0) { setState(POLL); break; }
         if (inputs == 8 && side == right) { setAllMin(side, fivepercent, colors); }
         else if (inputs == 12 && side == left) { setAllMin(side, fivepercent, colors); }
         else {setAll(side, colors);}
         if (side == left) colors--;
         dlyDelay.repeat();
-        if (side == left && colors == 0) setState(POLL);
-
+        
+        dlyDelay.start(dly);
         break;
 
     case TRAIL:
@@ -201,6 +216,9 @@ void stateMachine(int side) {
             break;
         }
         if (f < 93 && side == left) {
+            f++;
+        }
+        if (f < 53 && side == left) {
             f++;
         }
         else if(side == left){
@@ -249,19 +267,19 @@ void stateMachine(int side) {
             dlyDelay.start(fastfadeDly);
             break;
         }
+        if (side == left && colors == 0) setState(POLL);
+
         if (inputs == 8 && side == right) { setAllMin(side, fivepercent, colors); }
         else if (inputs == 11 && side == left) { setAllMin(side, fivepercent, colors); }
         else if (inputs == 15) { setAllMin(side, fifteenpercent, colors); }
         else if (inputs == 16) { setAllMin(side, fifteenpercent, colors); }
         else if (inputs == 30) { setAllMin(side, fifteenpercent, colors); }
         else if (inputs == 46) { setAllMin(side, fifteenpercent, colors); }
-        else if (inputs == 50 && tripFlag == 0) { setAllMin(side, fourtypercent, colors); }
-        else if (inputs == 62) { setAllMin(side, fourtypercent, colors); }
+        else if (inputs == 50 && tripFlag == 0) { setAllMin(side, fortypercent, colors); }
+        else if (inputs == 62) { setAllMin(side, fortypercent, colors); }
         else { setAll(side, colors); }
         if (side == left) colors--;
-            dlyDelay.repeat();
-        
-            if (side == left && colors == 0) setState(POLL);
+        dlyDelay.repeat();
 
         break;
     case POLL:
@@ -271,7 +289,7 @@ void stateMachine(int side) {
             enteringState = false;
             break;
         }
-        dlyDelay.repeat();
+        dlyDelay.start(1);
         break;
   }
 }
@@ -285,6 +303,8 @@ void setup() {
     pinMode(A3, INPUT_PULLUP);
     pinMode(A4, INPUT_PULLUP);
     pinMode(A5, INPUT_PULLUP);
+    setAll(left, 0);
+    setAll(right, 0);
 
     LEFT.begin();
     LEFT.setBrightness(MAX_BRIGHTNESS);
@@ -296,18 +316,21 @@ void setup() {
 
     mainLoopDelay.start(refreshDly);
     dlyDelay.start(30);
-    stateMachine(left);
     setState(POLL);
+    stateMachine(left);
+    stateMachine(right);
+    //LEFT.setPixelColor(93, 0);
+    //RIGHT.setPixelColor(93, 0);
+    setAll(right, 0);
+    setAll(left, 0);
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void loop() {
-    if (dlyDelay.justFinished()) {
-        stateMachine(left);
-        stateMachine(right);
-    }
+
+
     if (mainLoopDelay.justFinished()) {
         LEFT.show();
         RIGHT.show();
@@ -315,13 +338,18 @@ void loop() {
         poll_buttons(right);
         mainLoopDelay.restart();
     }
+    if (dlyDelay.justFinished()) {
+        stateMachine(left);
+        stateMachine(right);
+    }            
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void setAllMin(int side, u8 min, u8 colors) {
-    if (min > colors) setAll(side, colors);
-    if (min < colors) setAll(side, min);
+void setAllMin(int side, u8 min, u8 colorbs) {
+    if (min > colorbs) setAll(side, colorbs);
+    if (min < colorbs) setAll(side, min);
 }
 
 //turn all three white LEDs on
@@ -382,7 +410,7 @@ void poll_buttons(int side) {
         state == POLL &&
         inputs != 2
         ) {
-        setState(FASTFADE);
+        setState(POLL);
         inputs = 2;
     }
 
@@ -424,7 +452,8 @@ void poll_buttons(int side) {
         state == POLL &&
         inputs != 6
         ) {
-        setAll(right, fivepercent);
+        colors = fivepercent;
+        setAll(right, colors);
         inputs = 6;
     }
 
@@ -466,7 +495,8 @@ void poll_buttons(int side) {
         state == POLL &&
         inputs != 10
         ) {
-        setAll(left, fivepercent);
+        colors = fivepercent;
+        setAll(left, colors);
         inputs = 10;
     }
 
@@ -507,7 +537,8 @@ void poll_buttons(int side) {
         state == POLL &&
         inputs != 14
         ) {
-        setAll(both, fifteenpercent);
+        colors = fifteenpercent;
+        setAll(both, colors);
         inputs = 14;
     }
 
@@ -578,9 +609,11 @@ void poll_buttons(int side) {
         state == POLL &&
         inputs != 34
         ) {
-        setState(POLL);
-        colors = fourtypercent;
-        setAll(side, colors);
+        if (tripFlag == 0) {
+            setState(POLL);
+            colors = fortypercent;
+            setAll(both, colors);
+        }
         inputs = 34;
     }
 
@@ -594,7 +627,7 @@ void poll_buttons(int side) {
         state == POLL &&
         inputs != 46
         ) {
-        setState(FASTFADE);
+        //setState(FASTFADE);
         inputs = 46;
     }
 
@@ -629,9 +662,11 @@ void poll_buttons(int side) {
     if (trip_but.isPressed()) {
         tripDelay.start(5000);
         tripCount++;
+        Serial.println("tripCount++");
     }
     if (trip_but.isPressed() && tripCount == 2) {
         tripFlag = !tripFlag;
+        Serial.println(tripFlag);
         tripCount = 0;
     }
     
@@ -642,12 +677,3 @@ void poll_buttons(int side) {
     }
 
 }
-
-
-
-
-
-
-
-
-

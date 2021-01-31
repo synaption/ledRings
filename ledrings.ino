@@ -108,6 +108,7 @@ enum States {
     FLASH,          // 4
     FASTFADE,       // 5
     POLL,           // 6
+    ILLUMINATE_REVERSE,     // 7
 };
 
 States state;
@@ -226,7 +227,7 @@ void stateMachine(int side) {
         //    f++;
         //}
         else if(side == left){
-            setState(FLASH);
+            setState(ILLUMINATE_REVERSE);
             break;
         }
 
@@ -294,6 +295,39 @@ void stateMachine(int side) {
             break;
         }
         dlyDelay.start(1);
+        break;
+
+     case ILLUMINATE_REVERSE:
+
+        if (enteringState) {
+            colors = illuminateMaxBrightness;
+            f = 93;
+            enteringState = false;
+            dly = 15;
+            dlyDelay.start(dly);
+            break;
+        }
+
+        if (f > 0 && side == left) {
+            f--;
+            //dly = dly - illuminateDlyAcc;
+            //if (dly<0) dly=0;
+        }
+        else if (side == left) {
+            setState(FLASH);
+            break;
+        }
+
+
+        for (u16 i = 93; i > f; --i) {
+            if (side==left) LEFT.setPixelColor(i, colorW(colors));
+            if (side==right) RIGHT.setPixelColor(i, colorW(colors));
+        }
+
+        
+        dlyDelay.start(dly);
+        if (colors == illuminateMaxBrightness)colors = illuminateMaxBrightness - 1;
+        if (side == left) colors++;
         break;
   }
 }
@@ -544,7 +578,7 @@ void poll_buttons(int side) {
         state != TRAIL &&
         inputs != 14
         ) {
-        state == POLL;
+        state = POLL;
         colors = fifteenpercent;
         setAll(both, colors);
         inputs = 14;

@@ -415,6 +415,7 @@ void poll_buttons(int side) {
         inputs != 2
         ) {
         setState(POLL);
+        setAll(both, 0);
         inputs = 2;
     }
 

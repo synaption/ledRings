@@ -68,7 +68,7 @@ int inputs = 2;
 int illuminateDly = 30;  // speed of illumination phase of animation one, bigger numbers = slower
 u8 illuminateStartBrightness = 0x00;
 u8 illuminateMaxBrightness = 0x40; // brightness reached in animation one.  0x00-0xff
-int illuminateDlyAcc = 1; // acceleration of illumination phase of animation one, bigger numbers = slower
+int illuminateDlyAcc = 1; // acceleration of illumination phase of animation one, bigger numbers = faster
 
 int waitDly = 1000; // duration of wait phase of animation one, bigger numbers = longer
 

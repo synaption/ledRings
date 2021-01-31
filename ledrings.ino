@@ -214,7 +214,7 @@ void stateMachine(int side) {
 
         if (enteringState) {
             colors = trailBrightness;
-            f = 0;
+            f = 1;
             enteringState = false;
             dlyDelay.start(trailDly);
             break;
@@ -611,7 +611,9 @@ void poll_buttons(int side) {
         !E2in_but.isHeld(100)&&
         !Fin_but.isHeld(100) &&
         !Gin_but.isHeld(100) &&
-        state == POLL &&
+        //state == POLL &&
+        state != ILLUMINATE &&
+        state != TRAIL &&
         inputs != 34
         ) {
         setState(POLL);

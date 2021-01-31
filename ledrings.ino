@@ -222,9 +222,9 @@ void stateMachine(int side) {
         if (f < 93 && side == left) {
             f++;
         }
-        if (f < 53 && side == left) {
-            f++;
-        }
+        //if (f < 53 && side == left) {
+        //    f++;
+        //}
         else if(side == left){
             setState(FLASH);
             break;

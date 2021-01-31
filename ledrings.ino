@@ -658,14 +658,21 @@ void poll_buttons(int side) {
         state != ILLUMINATE &&
         state != ILLUMINATE_REVERSE &&
         state != TRAIL &&
+        state != FLASH &&
         inputs != 34
         ) {
-        setState(POLL);
+        
         if (tripFlag == 0) {
+            setState(POLL);
             colors = fortypercent;
             setAll(both, colors);
+            inputs = 34;
         }
-        inputs = 34;
+        //if (tripFlag == 1 ) {
+        //    colors = 0;
+        //    setAll(both, colors);
+        //}
+        
     }
 
     if (

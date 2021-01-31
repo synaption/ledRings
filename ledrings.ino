@@ -614,11 +614,11 @@ void poll_buttons(int side) {
         state == POLL &&
         inputs != 34
         ) {
-        if (tripFlag == 0) {
-            setState(POLL);
-            colors = fortypercent;
-            setAll(both, colors);
-        }
+        
+        setState(POLL);
+        colors = fortypercent;
+        setAll(both, colors);
+        
         inputs = 34;
     }
 

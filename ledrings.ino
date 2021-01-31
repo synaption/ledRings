@@ -96,7 +96,7 @@ millisDelay mainLoopDelay;
 millisDelay dlyDelay;
 
 millisDelay tripDelay;
-int tripFlag = 1;
+int tripFlag = 0;
 int tripCount = 0;
 
 // States
@@ -614,11 +614,11 @@ void poll_buttons(int side) {
         state == POLL &&
         inputs != 34
         ) {
-        
         setState(POLL);
-        colors = fortypercent;
-        setAll(both, colors);
-        
+        if (tripFlag == 0) {
+            colors = fortypercent;
+            setAll(both, colors);
+        }
         inputs = 34;
     }
 
@@ -665,7 +665,7 @@ void poll_buttons(int side) {
     }
 
     if (trip_but.isPressed()) {
-        tripDelay.start(5000);
+        tripDelay.start(3000);
         tripCount++;
         Serial.println("tripCount++");
     }

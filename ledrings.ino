@@ -90,6 +90,8 @@ u8 fivepercent = 0x0f; //value associated with five percent brightness, 0x00-0xf
 u8 fifteenpercent = 0x30; //value associated with fifteen percent brightness, 0x00-0xff
 u8 fortypercent = 0x50; //value associated with forty percent brightness, 0x00-0xff
 
+u8 ILLUMINATE_REVERSE_Brightness = illuminateMaxBrightness;
+
 //////////////////////////////////////////////////////////////////////
 
 millisDelay mainLoopDelay;
@@ -300,7 +302,7 @@ void stateMachine(int side) {
      case ILLUMINATE_REVERSE:
 
         if (enteringState) {
-            colors = trailBrightness;
+            colors = ILLUMINATE_REVERSE_Brightness;
             f = 108;
             enteringState = false;
             dly = 0;

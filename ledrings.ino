@@ -544,6 +544,7 @@ void poll_buttons(int side) {
         state != TRAIL &&
         inputs != 14
         ) {
+        state == POLL;
         colors = fifteenpercent;
         setAll(both, colors);
         inputs = 14;

@@ -539,7 +539,9 @@ void poll_buttons(int side) {
         E2in_but.isHeld(100) &&
         !Fin_but.isHeld(100) &&
         !Gin_but.isHeld(100) &&
-        state == POLL &&
+        //state == POLL &&
+        state != ILLUMINATE &&
+        state != TRAIL &&
         inputs != 14
         ) {
         colors = fifteenpercent;

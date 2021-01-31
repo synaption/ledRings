@@ -582,6 +582,7 @@ void poll_buttons(int side) {
         state != ILLUMINATE &&
         state != ILLUMINATE_REVERSE &&
         state != TRAIL &&
+        state != FLASH &&
         inputs != 14
         ) {
         state = POLL;

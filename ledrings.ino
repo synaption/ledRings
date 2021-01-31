@@ -1,5 +1,5 @@
 #include "Adafruit_NeoPixel.h"
-#include <inttypes.h>
+//#include <inttypes.h>
 #include "millisDelay.h"
 #include "buttons.h"
 
@@ -66,10 +66,11 @@ int inputs = 2;
 //  FASTFADE,       // 5
 
 int illuminateDly = 30;  // speed of illumination phase of animation one, bigger numbers = slower
+u8 illuminateStartBrightness = 0x00;
 u8 illuminateMaxBrightness = 0x40; // brightness reached in animation one.  0x00-0xff
-int illuminateDlyAcc = .93; // acceleration of illumination phase of animation one, bigger numbers = slower
+int illuminateDlyAcc = 1; // acceleration of illumination phase of animation one, bigger numbers = slower
 
-int waitDly = 15000; // duration of wait phase of animation one, bigger numbers = longer
+int waitDly = 1000; // duration of wait phase of animation one, bigger numbers = longer
 
 int slowfadeDly = 20; // speed of slow fade phase of animation one, bigger numbers = slower
 
@@ -95,7 +96,7 @@ millisDelay mainLoopDelay;
 millisDelay dlyDelay;
 
 millisDelay tripDelay;
-int tripFlag = 0;
+int tripFlag = 1;
 int tripCount = 0;
 
 // States
@@ -112,6 +113,7 @@ enum States {
 States state;
 bool enteringState;
 
+void setState(States newState);
 void setState(States newState) {
     enteringState = true;
     state = newState;
@@ -135,16 +137,18 @@ void stateMachine(int side) {
     case ILLUMINATE:
 
         if (enteringState) {
-            colors = 0x30;
+            colors = illuminateStartBrightness;
             f = 0;
             enteringState = false;
             dly = illuminateDly;
-            dlyDelay.start(illuminateDly);
+            dlyDelay.start(dly);
             break;
         }
 
         if (f < 108 && side == left) {
             f++;
+            dly = dly - illuminateDlyAcc;
+            if (dly<0) dly=0;
         }
         else if (side == left) {
             setState(WAIT);
@@ -160,7 +164,7 @@ void stateMachine(int side) {
             if (side==right) RIGHT.setPixelColor(i, colorW(colors));
         }
 
-        dly = dly * illuminateDlyAcc;
+        
         dlyDelay.start(dly);
         if (colors == illuminateMaxBrightness)colors = illuminateMaxBrightness - 1;
         if (side == left) colors++;
@@ -171,7 +175,7 @@ void stateMachine(int side) {
         if (enteringState) {
             enteringState = false;
             dly = waitDly;
-            dlyDelay.start(5000);
+            dlyDelay.start(waitDly);
             break;
         }
 

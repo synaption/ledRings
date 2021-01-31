@@ -300,10 +300,10 @@ void stateMachine(int side) {
      case ILLUMINATE_REVERSE:
 
         if (enteringState) {
-            colors = illuminateMaxBrightness;
-            f = 93;
+            colors = trailBrightness;
+            f = 108;
             enteringState = false;
-            dly = 15;
+            dly = 0;
             dlyDelay.start(dly);
             break;
         }
@@ -318,16 +318,19 @@ void stateMachine(int side) {
             break;
         }
 
-
-        for (u16 i = 93; i > f; --i) {
-            if (side==left) LEFT.setPixelColor(i, colorW(colors));
-            if (side==right) RIGHT.setPixelColor(i, colorW(colors));
+        for (u16 l = 108; l > f; l--) {
+            if (side==left) LEFT.setPixelColor(int(l/ 2.65) + 53, colorW(colors));
+            if (side==right) RIGHT.setPixelColor(int(l/ 2.65) + 53, colorW(colors));
+        }
+        for (u16 i = 108; i > f; --i) {
+            if (side==left) LEFT.setPixelColor((i / 2), colorW(colors));
+            if (side==right) RIGHT.setPixelColor((i / 2), colorW(colors));
         }
 
         
         dlyDelay.start(dly);
-        if (colors == illuminateMaxBrightness)colors = illuminateMaxBrightness - 1;
-        if (side == left) colors++;
+        
+        
         break;
   }
 }
@@ -575,6 +578,7 @@ void poll_buttons(int side) {
         !Gin_but.isHeld(100) &&
         //state == POLL &&
         state != ILLUMINATE &&
+        state != ILLUMINATE_REVERSE &&
         state != TRAIL &&
         inputs != 14
         ) {
@@ -650,6 +654,7 @@ void poll_buttons(int side) {
         !Gin_but.isHeld(100) &&
         //state == POLL &&
         state != ILLUMINATE &&
+        state != ILLUMINATE_REVERSE &&
         state != TRAIL &&
         inputs != 34
         ) {

@@ -116,7 +116,7 @@ enum States {
 States state;
 bool enteringState;
 
-void setState(States newState);
+//void setState(States newState);
 void setState(States newState) {
     enteringState = true;
     state = newState;
@@ -166,7 +166,7 @@ void stateMachine(int side) {
             if (side==left) LEFT.setPixelColor(i, colorW(colors));
             if (side==right) RIGHT.setPixelColor(i, colorW(colors));
         }
-
+        
         
         dlyDelay.start(dly);
         if (colors == illuminateMaxBrightness)colors = illuminateMaxBrightness - 1;
@@ -340,12 +340,12 @@ void stateMachine(int side) {
 
 void setup() {
     Serial.begin(9600);
-    pinMode(A0, INPUT_PULLUP);
-    pinMode(A1, INPUT_PULLUP);
-    pinMode(A2, INPUT_PULLUP);
-    pinMode(A3, INPUT_PULLUP);
-    pinMode(A4, INPUT_PULLUP);
-    pinMode(A5, INPUT_PULLUP);
+    pinMode(Cin , INPUT_PULLUP);
+    pinMode(Din , INPUT_PULLUP);
+    pinMode(E1in, INPUT_PULLUP);
+    pinMode(E2in, INPUT_PULLUP);
+    pinMode(Fin , INPUT_PULLUP);
+    pinMode(Gin , INPUT_PULLUP);
     setAll(left, 0);
     setAll(right, 0);
 
@@ -425,12 +425,12 @@ void poll_buttons(int side) {
     //Serial.print(trip_state);
     //Serial.println("x");
 
-    Cin_state  = !digitalRead(Cin);
-    Din_state  = !digitalRead(Din);
+    Cin_state = !digitalRead(Cin);
+    Din_state = !digitalRead(Din);
     E1in_state = !digitalRead(E1in);
     E2in_state = !digitalRead(E2in);
-    Fin_state  = !digitalRead(Fin);
-    Gin_state  = !digitalRead(Gin);
+    Fin_state = !digitalRead(Fin);
+    Gin_state = !digitalRead(Gin);
     trip_state = (digitalRead(E1in) && digitalRead(E2in));
 
 
@@ -446,8 +446,8 @@ void poll_buttons(int side) {
     if (
         !Cin_but.isHeld(100) &&
         !Din_but.isHeld(100) &&
-        !E1in_but.isHeld(100)&&
-        !E2in_but.isHeld(100)&&
+        !E1in_but.isHeld(100) &&
+        !E2in_but.isHeld(100) &&
         !Fin_but.isHeld(100) &&
         !Gin_but.isHeld(100) &&
         state == POLL &&
@@ -461,10 +461,10 @@ void poll_buttons(int side) {
     if (
         !Cin_but.isHeld(100) &&
         !Din_but.isHeld(100) &&
-        !E1in_but.isHeld(100)&&
-        !E2in_but.isHeld(100)&&
+        !E1in_but.isHeld(100) &&
+        !E2in_but.isHeld(100) &&
         !Fin_but.isHeld(100) &&
-        Gin_but.isHeld(100)  &&
+        Gin_but.isHeld(100) &&
         state == POLL &&
         inputs != 3
         ) {
@@ -475,9 +475,9 @@ void poll_buttons(int side) {
     if (
         !Cin_but.isHeld(100) &&
         !Din_but.isHeld(100) &&
-        !E1in_but.isHeld(100)&&
-        !E2in_but.isHeld(100)&&
-        Fin_but.isHeld(100)  &&
+        !E1in_but.isHeld(100) &&
+        !E2in_but.isHeld(100) &&
+        Fin_but.isHeld(100) &&
         !Gin_but.isHeld(100) &&
         state != SLOWFADE &&
         inputs != 4
@@ -489,7 +489,7 @@ void poll_buttons(int side) {
     if (
         !Cin_but.isHeld(100) &&
         !Din_but.isHeld(100) &&
-        !E1in_but.isHeld(100)&&
+        !E1in_but.isHeld(100) &&
         E2in_but.isHeld(100) &&
         !Fin_but.isHeld(100) &&
         !Gin_but.isHeld(100) &&
@@ -504,10 +504,10 @@ void poll_buttons(int side) {
     if (
         !Cin_but.isHeld(100) &&
         !Din_but.isHeld(100) &&
-        !E1in_but.isHeld(100)&&
+        !E1in_but.isHeld(100) &&
         E2in_but.isHeld(100) &&
         !Fin_but.isHeld(100) &&
-        Gin_but.isHeld(100)  &&
+        Gin_but.isHeld(100) &&
         state == POLL &&
         inputs != 7
         ) {
@@ -518,9 +518,9 @@ void poll_buttons(int side) {
     if (
         !Cin_but.isHeld(100) &&
         !Din_but.isHeld(100) &&
-        !E1in_but.isHeld(100)&&
+        !E1in_but.isHeld(100) &&
         E2in_but.isHeld(100) &&
-        Fin_but.isHeld(100)  &&
+        Fin_but.isHeld(100) &&
         !Gin_but.isHeld(100) &&
         state != SLOWFADE &&
         inputs != 8
@@ -533,7 +533,7 @@ void poll_buttons(int side) {
         !Cin_but.isHeld(100) &&
         !Din_but.isHeld(100) &&
         E1in_but.isHeld(100) &&
-        !E2in_but.isHeld(100)&&
+        !E2in_but.isHeld(100) &&
         !Fin_but.isHeld(100) &&
         !Gin_but.isHeld(100) &&
         state == POLL &&
@@ -548,9 +548,9 @@ void poll_buttons(int side) {
         !Cin_but.isHeld(100) &&
         !Din_but.isHeld(100) &&
         E1in_but.isHeld(100) &&
-        !E2in_but.isHeld(100)&&
+        !E2in_but.isHeld(100) &&
         !Fin_but.isHeld(100) &&
-        Gin_but.isHeld(100)  &&
+        Gin_but.isHeld(100) &&
         state == POLL &&
         inputs != 11
         ) {
@@ -562,8 +562,8 @@ void poll_buttons(int side) {
         !Cin_but.isHeld(100) &&
         !Din_but.isHeld(100) &&
         E1in_but.isHeld(100) &&
-        !E2in_but.isHeld(100)&&
-        Fin_but.isHeld(100)  &&
+        !E2in_but.isHeld(100) &&
+        Fin_but.isHeld(100) &&
         !Gin_but.isHeld(100) &&
         state != SLOWFADE &&
         inputs != 12
@@ -596,8 +596,8 @@ void poll_buttons(int side) {
         !Din_but.isHeld(100) &&
         E1in_but.isHeld(100) &&
         E2in_but.isHeld(100) &&
-        !Fin_but.isHeld(100) &&
-        Gin_but.isHeld(100)  &&
+        //!Fin_but.isHeld(100) &&
+        Gin_but.isHeld(100) &&
         state == POLL &&
         inputs != 15
         ) {
@@ -610,7 +610,7 @@ void poll_buttons(int side) {
         !Din_but.isHeld(100) &&
         E1in_but.isHeld(100) &&
         E2in_but.isHeld(100) &&
-        Fin_but.isHeld(100)  &&
+        Fin_but.isHeld(100) &&
         !Gin_but.isHeld(100) &&
         state != FASTFADE &&
         inputs != 16
@@ -622,12 +622,12 @@ void poll_buttons(int side) {
 
     if (
         !Cin_but.isHeld(100) &&
-        Din_but.isHeld(100)  &&
-        !E1in_but.isHeld(100)&&
-        !E2in_but.isHeld(100)&&
+        Din_but.isHeld(100) &&
+        !E1in_but.isHeld(100) &&
+        !E2in_but.isHeld(100) &&
         !Fin_but.isHeld(100) &&
         !Gin_but.isHeld(100) &&
-        state == POLL &&
+        (state == POLL || state == SLOWFADE) &&
         inputs != 18
         ) {
         setState(TRAIL);
@@ -641,7 +641,7 @@ void poll_buttons(int side) {
         E2in_but.isHeld(100) &&
         !Fin_but.isHeld(100) &&
         !Gin_but.isHeld(100) &&
-        state == POLL &&
+        (state == POLL || state == SLOWFADE) &&
         inputs != 30
         ) {
         setState(TRAIL);
@@ -686,7 +686,7 @@ void poll_buttons(int side) {
         state == POLL &&
         inputs != 46
         ) {
-        //setState(FASTFADE);
+        setState(FASTFADE);
         inputs = 46;
     }
 
@@ -697,7 +697,7 @@ void poll_buttons(int side) {
         !E2in_but.isHeld(100)&&
         !Fin_but.isHeld(100) &&
         !Gin_but.isHeld(100) &&
-        state == POLL &&
+        (state == POLL || state == SLOWFADE) &&
         inputs != 50
         ) {
         setState(TRAIL);
@@ -711,7 +711,7 @@ void poll_buttons(int side) {
         E2in_but.isHeld(100) &&
         !Fin_but.isHeld(100) &&
         !Gin_but.isHeld(100) &&
-        state == POLL &&
+        (state == POLL || state == SLOWFADE) &&
         inputs != 62
         ) {
         setState(TRAIL);
